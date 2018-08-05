@@ -9,6 +9,7 @@ import json
 from flask import Flask, jsonify
 
 # Building a Blockchain
+
 class Blockchain:
     def __init__(self):
         self.chain = []
@@ -58,6 +59,50 @@ class Blockchain:
             return True
         
 
-# Mining a Blockchain
+# Mining a Blockchain           
+            
+# Creating a Web App - using Flask
+            
+app = Flask(__name__)
+        
+
+# Creating a Blockchain - instance of Blockchain class
+blockchain = Blockchain()
+        
+        
+# Mining a New Block --> http://127.0.0.1:5000/
+        
+@app.route('/mine_block', methods = ['GET'])
+def mine_block():
+            previous_block = blockchain.get_previous_block()
+            previous_proof = previous_block['proof']
+            proof = blockchain.proof_of_work(previous_proof)
+            previous_hash = blockchain.hash(previous_block)
+            
+            block = blockchain.create_block(proof, previous_hash)
+            response = {'Message' : 'Congratulations you just mined a block',
+                        'index' : block['index'],
+                        'timestamp' : block['timestamp'], 
+                        'proof' : block['proof'],
+                        'previous_hash' : block['previous_hash']}
+            return jsonify(response), 200
+        
+
+# Getting the full Blockchain
+            
+@app.route('/get_chain', methods = ['GET'])
+def get_chain():
+            response = {'chain' : blockchain.chain,
+                        'length' : len(blockchain.chain)}
+            
+            return jsonify(response), 200
+    
+    
+# Running the App
+            
+app.run(host = '0.0.0.0', port = 5000)
+
+            
+    
             
         
